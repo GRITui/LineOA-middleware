@@ -17,5 +17,11 @@ public func configure(_ app: Application) throws {
     app.migrations.add(CreateSession())
     app.migrations.add(CreateBooking())
 
+    if let token = Environment.get("LINE_CHANNEL_ACCESS_TOKEN"), !token.isEmpty {
+        app.lineMessaging = LiveLineMessagingClient(client: app.client, channelAccessToken: token)
+    } else {
+        app.lineMessaging = NoopLineMessagingClient()
+    }
+
     try routes(app)
 }
