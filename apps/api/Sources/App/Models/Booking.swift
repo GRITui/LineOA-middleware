@@ -25,6 +25,15 @@ final class Booking: Model, Content, @unchecked Sendable {
     @Timestamp(key: "created_date", on: .create)
     var createdDate: Date?
 
+    @Field(key: "reminder_24h_sent")
+    var reminder24Sent: Bool
+
+    @Field(key: "reminder_2h_sent")
+    var reminder2Sent: Bool
+
+    @Field(key: "reminder_15min_sent")
+    var reminder15Sent: Bool
+
     init() {}
 
     init(id: UUID? = nil, customerID: Customer.IDValue, sessionID: Session.IDValue, status: BookingStatus = .confirmed) {
@@ -32,6 +41,9 @@ final class Booking: Model, Content, @unchecked Sendable {
         self.$customer.id = customerID
         self.$session.id = sessionID
         self.status = status
+        self.reminder24Sent = false
+        self.reminder2Sent = false
+        self.reminder15Sent = false
     }
 }
 
@@ -48,6 +60,9 @@ struct CreateBooking: AsyncMigration {
             .field("session_id", .uuid, .required, .references("sessions", "id"))
             .field("status", status, .required, .sql(.default("confirmed")))
             .field("created_date", .datetime)
+            .field("reminder_24h_sent", .bool, .required, .sql(.default(false)))
+            .field("reminder_2h_sent", .bool, .required, .sql(.default(false)))
+            .field("reminder_15min_sent", .bool, .required, .sql(.default(false)))
             .unique(on: "customer_id", "session_id")
             .create()
     }
