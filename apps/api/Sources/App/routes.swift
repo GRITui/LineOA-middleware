@@ -5,4 +5,5 @@ func routes(_ app: Application) throws {
 
     try app.register(collection: AvailabilityController())
     try app.register(collection: BookingController())
+    try app.register(collection: ReportController())
 }
