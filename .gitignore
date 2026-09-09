@@ -1,0 +1,19 @@
+# Swift
+apps/api/.build/
+apps/api/.swiftpm/
+apps/api/*.xcodeproj
+
+# Node / Next.js
+apps/liff/node_modules/
+apps/liff/.next/
+apps/liff/out/
+
+# Env / secrets
+.env
+*.env
+!*.env.example
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
