@@ -8,4 +8,5 @@ func routes(_ app: Application) throws {
     try app.register(collection: ReportController())
     try app.register(collection: CustomerController())
     try app.register(collection: LineWebhookController())
+    try app.register(collection: SessionController())
 }

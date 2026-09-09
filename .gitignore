@@ -2,6 +2,9 @@
 apps/api/.build/
 apps/api/.swiftpm/
 apps/api/*.xcodeproj
+apps/admin-macos/.build/
+apps/admin-macos/.swiftpm/
+apps/admin-macos/*.xcodeproj
 
 # Node / Next.js
 apps/liff/node_modules/
