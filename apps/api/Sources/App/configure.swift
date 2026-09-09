@@ -23,5 +23,16 @@ public func configure(_ app: Application) throws {
         app.lineMessaging = NoopLineMessagingClient()
     }
 
+    // One lean scheduled job covers all three reminder windows. See issue #29.
+    if app.environment != .testing {
+        app.eventLoopGroup.any().scheduleRepeatedAsyncTask(initialDelay: .seconds(30), delay: .seconds(60)) { _ in
+            let promise = app.eventLoopGroup.any().makePromise(of: Void.self)
+            promise.completeWithTask {
+                await ReminderService.run(db: app.db, client: app.lineMessaging, logger: app.logger)
+            }
+            return promise.futureResult
+        }
+    }
+
     try routes(app)
 }
