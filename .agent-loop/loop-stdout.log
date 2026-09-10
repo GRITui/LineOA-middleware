@@ -1,0 +1,28 @@
+[15:20:57] == sprint-loop start ==
+[15:20:57] picked TSK-101: API: duplicate booking 500 → clean 409
+[15:21:09] engineer run for TSK-101
+[15:21:10] TSK-101 engineer crash strike 1 — retrying
+[15:21:10] picked TSK-101: API: duplicate booking 500 → clean 409
+[15:21:16] engineer run for TSK-101
+[15:21:17] TSK-101 engineer crash strike 2 — retrying
+[15:21:17] picked TSK-101: API: duplicate booking 500 → clean 409
+[15:21:23] engineer run for TSK-101
+scripts/sprint-loop.sh: line 242: 1
+2: syntax error in expression (error token is "2")
+[15:22:05] == sprint-loop start ==
+[15:22:05] picked TSK-101: API: duplicate booking 500 → clean 409
+[15:22:12] engineer run for TSK-101
+[15:28:45] TSK-101 engineer crash strike 1 — retrying
+[15:28:45] picked TSK-101: API: duplicate booking 500 → clean 409
+[15:28:52] engineer run for TSK-101
+[15:30:08] TSK-101 engineer crash strike 2 — retrying
+[15:30:08] picked TSK-101: API: duplicate booking 500 → clean 409
+[15:30:16] engineer run for TSK-101
+scripts/sprint-loop.sh: line 249: 1
+2: syntax error in expression (error token is "2")
+[15:37:59] == sprint-loop start ==
+[15:37:59] picked TSK-101: API: duplicate booking 500 → clean 409
+[15:38:05] engineer run for TSK-101
+[15:45:01] == sprint-loop start ==
+[15:45:01] picked TSK-101: API: duplicate booking 500 → clean 409
+[15:45:08] engineer run for TSK-101
