@@ -14,6 +14,7 @@ apps/liff/out/
 # Env / secrets
 .env
 *.env
+.env.*
 !*.env.example
 
 # OS / editor

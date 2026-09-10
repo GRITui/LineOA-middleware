@@ -1,0 +1,32 @@
+# Self-hosted local/staging stack (issue #27, self-hosted path).
+# Not used by CI. Brings up Postgres only — the Vapor app runs natively
+# (see docs/self-hosting.md) so it can bind to a tunnel on the host.
+#
+# Usage:
+#   docker compose -f docker-compose.selfhost.yml up -d
+#
+# This creates the DB owner role via POSTGRES_USER/PASSWORD, then
+# db/init/01-app-role.sql provisions the least-privilege runtime role
+# documented in docs/db-security.md.
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: lineoa_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: lineoa_owner
+      POSTGRES_PASSWORD: ${POSTGRES_OWNER_PASSWORD:-owner_dev_password}
+      POSTGRES_DB: lineoa_booking
+    ports:
+      - "5432:5432"
+    volumes:
+      - lineoa_pg_data:/var/lib/postgresql/data
+      - ./db/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lineoa_owner -d lineoa_booking"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  lineoa_pg_data:
