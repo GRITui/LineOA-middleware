@@ -66,3 +66,38 @@ account + DNS access — out of scope for the no-account path here).
 - Dev-only passwords are used above — rotate them (edit `db/init/01-app-role.sql`
   and `POSTGRES_OWNER_PASSWORD`, recreate the `docker compose` volume) before
   treating this as anything beyond a throwaway smoke-test environment.
+
+## Staging designation
+
+As of 2026-09-10, this self-hosted stack — Docker Compose Postgres
+(`docker-compose.selfhost.yml`) + the Vapor app (`swift run App serve`) +
+a Cloudflare quick tunnel — **is** the project's staging environment for
+this prototype phase. This is not a placeholder awaiting a future cloud
+deploy: issue #25 ("deploy to staging") is resolved by this designation
+rather than by provisioning Vercel/Azure/a VPS. See
+`docs/staging-signoff-checklist.md` for the secrets/monitoring/rollback
+sign-off that accompanies this decision.
+
+If a real cloud deploy becomes necessary later, treat it as a new,
+separate piece of work rather than an implicit upgrade of "staging" — the
+limitations listed above (ephemeral tunnel URL, no process supervisor, no
+external monitoring) are accepted realities of this environment, not bugs
+to silently fix later.
+
+### Running the LIFF frontend alongside the stack
+
+`apps/liff` (Next.js) is not part of `docker-compose.selfhost.yml` — there
+is no Dockerfile for it anywhere in this repo to model one on, so it's run
+directly with npm alongside the Postgres container and the Vapor app:
+
+```
+cd apps/liff
+npm install
+npm run build
+npm start
+```
+
+This runs the production Next.js server (`next start`) on its default port
+(3000). Configure `apps/liff/.env` (see `apps/liff/.env.example`) with the
+LIFF ID from issue #3 before starting it. `npm run dev` (`next dev`) also
+works for local iteration but is not what "staging" should be running.

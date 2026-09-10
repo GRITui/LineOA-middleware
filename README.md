@@ -118,13 +118,13 @@ See `docs/db-security.md` for the full least-privilege Postgres role setup. Summ
 
 ## Deploy notes
 
-There is no live deployment yet. The intended process, based on open infra issues:
+There is no live cloud deployment. The intended process for the remaining open infra:
 
 1. **LINE channel provisioning** (issue #3, open) — create the Messaging API channel + LIFF channel in the LINE Developers console, capture the channel access token/secret and LIFF ID in a secrets store (not in source — see `.env.example` / `apps/liff/.env.example` for the variables each app needs).
 2. **Backend hosting + Postgres** (issue #27, open) — provision a lean hosting target (Docker container on a VPS or Azure Container Apps) running the Swift server, with a Postgres database reachable from it. This supersedes an earlier plan involving an Azure Function App + Dataverse, which was dropped in favor of a single Swift/Vapor backend — this repo has no Dataverse integration.
-3. **Deploy to staging** (issue #25, open) — deploy `apps/liff` as a static/Next.js site (e.g. Vercel or Azure Static Web Apps) and `apps/api` as a container to the target from step 2, with a signed-off checklist covering secrets, monitoring/logging, and a rollback plan.
+3. **Staging (issue #25) — resolved, self-hosted**: as of 2026-09-10 the repo owner decided against chasing external cloud hosting (Vercel/Azure/VPS) for this prototype phase. The existing self-hosted stack — Docker Compose Postgres + the Vapor app + a Cloudflare quick tunnel, with the LIFF frontend run alongside it via `npm` — is now formally designated the project's staging environment. See `docs/self-hosting.md` (setup + the "Staging designation" section) and `docs/staging-signoff-checklist.md` (the secrets/monitoring/rollback sign-off) for details.
 
-**These credentials are not yet provisioned as of this writing** (issues #3/#25/#27 are all open) — this README documents the intended process only; do not attempt a live deploy without them. Once hosting exists, apply the `lineoa_app` least-privilege Postgres role from `docs/db-security.md` before pointing production traffic at it, and run migrations with a separate elevated role as described above.
+**Issues #3 and #27 remain open** — LINE channel credentials and a real cloud hosting target are not yet provisioned, so a live production deploy shouldn't be attempted without them. Once hosting exists, apply the `lineoa_app` least-privilege Postgres role from `docs/db-security.md` before pointing production traffic at it, and run migrations with a separate elevated role as described above.
 
 When something does fail in a running deployment, see `docs/runbook.md` for common failure modes (LINE credential expiry, webhook signature mismatches, missed reminder job runs, DB connectivity) and how to recover.
 
