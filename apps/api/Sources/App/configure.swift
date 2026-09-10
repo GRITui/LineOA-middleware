@@ -34,5 +34,17 @@ public func configure(_ app: Application) throws {
         }
     }
 
+    // See the CORS origin note in docs/db-security.md issue context: the LIFF
+    // Mini App is served from a different origin than the API in every real
+    // deployment (LINE webview -> API host), so the browser needs explicit
+    // CORS clearance for availability/booking calls. POC: allow any origin.
+    let cors = CORSMiddleware(configuration: CORSMiddleware.Configuration(
+        allowedOrigin: .all,
+        allowedMethods: [.GET, .POST, .PUT, .OPTIONS],
+        allowedHeaders: ["content-type", "authorization", "x-line-signature"],
+        cacheExpiration: 86400
+    ))
+    app.middleware.use(cors, at: .beginning)
+
     try routes(app)
 }
