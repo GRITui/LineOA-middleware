@@ -1,0 +1,39 @@
+[15:20:57] == sprint-loop start ==
+[15:20:57] picked TSK-101: API: duplicate booking 500 → clean 409
+[15:21:09] engineer run for TSK-101
+[15:21:10] TSK-101 engineer crash strike 1 — retrying
+[15:21:10] picked TSK-101: API: duplicate booking 500 → clean 409
+[15:21:16] engineer run for TSK-101
+[15:21:17] TSK-101 engineer crash strike 2 — retrying
+[15:21:17] picked TSK-101: API: duplicate booking 500 → clean 409
+[15:21:23] engineer run for TSK-101
+[15:22:05] == sprint-loop start ==
+[15:22:05] picked TSK-101: API: duplicate booking 500 → clean 409
+[15:22:12] engineer run for TSK-101
+[15:28:45] TSK-101 engineer crash strike 1 — retrying
+[15:28:45] picked TSK-101: API: duplicate booking 500 → clean 409
+[15:28:52] engineer run for TSK-101
+[15:30:08] TSK-101 engineer crash strike 2 — retrying
+[15:30:08] picked TSK-101: API: duplicate booking 500 → clean 409
+[15:30:16] engineer run for TSK-101
+[15:37:59] == sprint-loop start ==
+[15:37:59] picked TSK-101: API: duplicate booking 500 → clean 409
+[15:38:05] engineer run for TSK-101
+[15:40:01] == sprint-loop start ==
+[15:40:04] == sprint-loop start ==
+[15:40:04] picked TSK-101: API: duplicate booking 500 → clean 409
+[15:40:11] engineer run for TSK-101
+[15:40:14] == sprint-loop start ==
+[15:40:14] picked TSK-101: API: duplicate booking 500 → clean 409
+[15:40:22] engineer run for TSK-101
+[15:40:27] == sprint-loop start ==
+[15:40:28] picked TSK-101: API: duplicate booking 500 → clean 409
+[15:40:37] engineer run for TSK-101
+[15:45:01] == sprint-loop start ==
+[15:45:01] picked TSK-101: API: duplicate booking 500 → clean 409
+[15:45:08] engineer run for TSK-101
+[15:45:08] engineer attempt via openrouter/cohere/north-mini-code:free (attempt0)
+[15:46:21] engineer openrouter/cohere/north-mini-code:free failed (quota)
+[15:46:21] engineer attempt via openrouter/nvidia/nemotron-3.5-lightning:free (attempt0)
+[15:47:41] engineer openrouter/nvidia/nemotron-3.5-lightning:free failed (quota)
+[15:47:41] engineer attempt via opencode-go/minimax-m3 (attempt0)

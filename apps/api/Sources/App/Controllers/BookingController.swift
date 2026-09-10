@@ -43,7 +43,13 @@ struct BookingController: RouteCollection {
             }
 
             let booking = Booking(customerID: input.customerID, sessionID: input.sessionID)
-            try await booking.save(on: db)
+            do {
+                try await booking.save(on: db)
+            } catch let dbError as DatabaseError where dbError.isUniqueConstraintViolation {
+                // Duplicate (customer_id, session_id) — surface as a clean 409
+                // instead of letting the raw PostgresError bubble up as a 500.
+                throw BookingError.duplicate
+            }
 
             session.bookedCount += 1
             if session.bookedCount >= session.capacity {
