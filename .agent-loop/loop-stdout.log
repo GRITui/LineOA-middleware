@@ -26,3 +26,21 @@ scripts/sprint-loop.sh: line 249: 1
 [15:45:01] == sprint-loop start ==
 [15:45:01] picked TSK-101: API: duplicate booking 500 → clean 409
 [15:45:08] engineer run for TSK-101
+A  .agent-loop/backlog-inbox.md
+A  .agent-loop/loop-stdout.log
+A  .agent-loop/loop.log
+[0/1] Planning build
+Building for debugging...
+[0/3] Write swift-version--58304C5D6DBC2206.txt
+Build complete! (26.44s)
+[15:52:57] TSK-101 PR: https://github.com/GRITui/LineOA-middleware/pull/45
+Traceback (most recent call last):
+  File "<stdin>", line 9, in <module>
+  File "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/re.py", line 210, in sub
+    return _compile(pattern, flags).sub(repl, string, count)
+  File "<stdin>", line 5, in repl
+IndexError: no such group
+scripts/sprint-loop.sh: line 294: PCT: unbound variable
+[03:07:09] == sprint-loop start ==
+[03:07:09] picked TSK-202: Admin: session detail (bookings + reminder chips) &amp; customers page
+[03:07:21] engineer run for TSK-202

@@ -3,29 +3,28 @@
 Coordinator: scripts/sprint-loop.sh · Engineer: openrouter/cohere/north-mini-code:free · Reviewer: groq/compound
 
 <task_item>
-  <id>TSK-101</id>
+<id>TSK-101</id>
   <source>OWNER_POPUP</source>
-  <status>READY_FOR_PM</status>
+  <status>DONE</status>
   <priority>HIGH</priority>
   <title>API: duplicate booking 500 → clean 409</title>
   <description>POST /bookings with an existing (customer_id, session_id) currently surfaces as raw PSQLError 500. Map the 23505 unique-constraint violation to Abort(.conflict, "Booking already exists for this customer and session") inside BookingController.create.</description>
-  <acceptance>swift build passes; duplicate POST returns HTTP 409 with the friendly reason; no other flows changed</acceptance>
 </task_item>
 
 <task_item>
-  <id>TSK-102</id>
+<id>TSK-102</id>
   <source>OWNER_POPUP</source>
-  <status>READY_FOR_PM</status>
+  <status>DONE</status>
   <priority>HIGH</priority>
   <title>API: DELETE /sessions/:id + GET /customers + reminder-flag fields</title>
-  <description>1) SessionController: add delete route — DELETE /sessions/:sessionID returns 204, but 409 with reason if bookedCount &gt; 0. 2) CustomerController: GET /customers returns [Customer] each with bookingCount (query bookings count per customer). 3) SessionController.bookings response struct: add fields reminder24Sent, reminder2Sent, reminder15Sent (from Booking's reminder_24h_sat/2h/15min columns).</description>
+  <description>1) SessionController: add delete route — DELETE /sessions/:sessionID returns 204, but 409 with reason if bookedCount > 0. 2) CustomerController: GET /customers returns [Customer] each with bookingCount (query bookings count per customer). 3) SessionController.bookings response struct: add fields reminder24Sent, reminder2Sent, reminder15Sent (from Booking's reminder_24h_sat/2h/15min columns).</description>
   <acceptance>swift build passes; routes visible via App routes command; existing flows untouched</acceptance>
 </task_item>
 
 <task_item>
   <id>TSK-201</id>
   <source>OWNER_POPUP</source>
-  <status>READY_FOR_PM</status>
+  <status>DONE</status>
   <priority>HIGH</priority>
   <title>Admin: scaffold apps/admin (Next.js, localhost-only) + sessions CRUD page</title>
   <description>Create apps/admin as a Next.js 15 (App Router) + Tailwind app mirroring apps/liff conventions (package.json scripts dev/build/start/lint, .env.example with NEXT_PUBLIC_API_BASE_URL=http://localhost:8080). lib/api.ts fetch helpers. Page /: sessions list (via GET /sessions) with title/date/capacity/status + create form (POST /sessions) + edit (PUT /sessions/:id) + delete button wired to DELETE /sessions/:id with a confirmation, showing 409 reason when bookings exist. Use fetch with cache: 'no-store'.</description>

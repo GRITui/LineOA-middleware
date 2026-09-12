@@ -7,6 +7,7 @@ import Vapor
 struct CustomerController: RouteCollection {
     func boot(routes: RoutesBuilder) throws {
         routes.post("customers", "resolve", use: resolve)
+        routes.get("customers", use: index)
     }
 
     struct ResolveRequest: Content {
@@ -36,4 +37,29 @@ struct CustomerController: RouteCollection {
         try await customer.save(on: req.db)
         return customer
     }
+
+    func index(req: Request) async throws -> [CustomerWithBookingCount] {
+        let customers = try await Customer.query(on: req.db).all()
+        var result = [CustomerWithBookingCount]()
+        result.reserveCapacity(customers.count)
+        for customer in customers {
+            let bookingCount = try await Booking.query(on: req.db)
+                .filter(\.$customer.$id == customer.requireID())
+                .count()
+            result.append(CustomerWithBookingCount(
+                id: try customer.requireID(),
+                lineUserID: customer.lineUserID,
+                name: customer.name,
+                bookingCount: bookingCount
+            ))
+        }
+        return result
+    }
+}
+
+struct CustomerWithBookingCount: Content {
+    var id: UUID
+    var lineUserID: String
+    var name: String
+    var bookingCount: Int
 }
