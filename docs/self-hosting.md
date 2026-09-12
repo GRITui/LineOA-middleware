@@ -101,3 +101,19 @@ This runs the production Next.js server (`next start`) on its default port
 (3000). Configure `apps/liff/.env` (see `apps/liff/.env.example`) with the
 LIFF ID from issue #3 before starting it. `npm run dev` (`next dev`) also
 works for local iteration but is not what "staging" should be running.
+
+### Admin panel
+
+`apps/admin` (Next.js web admin, localhost-only, no auth yet) runs alongside
+the stack for local E2E only — do not expose it via a tunnel:
+
+```
+cd apps/admin
+npm install
+npm run build
+npm start
+```
+
+This runs the production Next.js server (`next start`) on port 3000 by
+default (or `$PORT` if set). It talks to `apps/api` via
+`NEXT_PUBLIC_API_BASE_URL` (defaults to `http://localhost:8080`).

@@ -6,7 +6,7 @@ LINE Official Account + LINE Mini App (LIFF) booking platform proof of concept.
 
 - **`apps/liff`** — LINE Mini App frontend (Next.js/React/Tailwind, required by LINE's LIFF webview).
 - **`apps/api`** — Backend API (Swift 6/Vapor 4 + Postgres via Fluent).
-- **`apps/admin-macos`** — Native SwiftUI macOS admin app for managing sessions/bookings (thin client over `apps/api`, see issue #28). Prototype: no auth, hardcoded/overridable base URL.
+- **`apps/admin`** — Web admin panel (Next.js, localhost-only). No auth yet — do not expose publicly.
 
 ## Scope
 
@@ -24,7 +24,7 @@ apps/
     Sources/App/Models/        Fluent models (Booking, Customer, Session)
     Tests/AppTests/            XCTVapor test suite
   liff/           Next.js LIFF Mini App (Tailwind)
-  admin-macos/    SwiftUI macOS admin app
+  admin/          Next.js web admin panel (localhost-only, no auth yet)
 docs/
   db-security.md  Least-privilege Postgres role for the app (see Deploy below)
   runbook.md      Common failure modes and recovery steps
@@ -35,7 +35,7 @@ docs/
 
 - **apps/api**: Swift 5.9+ toolchain (CI pins `swift-version: "5.9"` on `macos-14`), a local Postgres instance.
 - **apps/liff**: Node 20 (CI uses `actions/setup-node@v4` with `node-version: "20"`), npm.
-- **apps/admin-macos**: Swift 5.9+ toolchain / Xcode, macOS 13+ (see `Package.swift` platform requirement). Runs against `apps/api` over HTTP — no separate backend of its own.
+- **apps/admin**: Node 20, npm. Web admin panel run with `npm install && npm run build && npm start` — no separate backend of its own, talks to `apps/api` over HTTP.
 - A LINE Developers account with a Messaging API channel and a LIFF channel (tracked in issue #3 — not yet provisioned as of this writing). Local development can run without live LINE credentials: the API falls back to a no-op LINE messaging client (`NoopLineMessagingClient`) when `LINE_CHANNEL_ACCESS_TOKEN` is unset, and the webhook route requires `LINE_CHANNEL_SECRET` to be set to accept any request.
 
 ## Local setup
@@ -78,16 +78,16 @@ Env vars (`apps/liff/.env.example`):
 | `NEXT_PUBLIC_LINE_LOGIN_CHANNEL_ID` | LINE Login channel ID |
 | `NEXT_PUBLIC_API_BASE_URL` | Base URL of `apps/api` (defaults to `http://localhost:8080`) |
 
-### Admin app (`apps/admin-macos`)
+### Admin app (`apps/admin`)
 
 ```bash
-cd apps/admin-macos
-swift run
-# or point at a non-local API:
-LINEOA_API_BASE_URL=https://staging.example.com swift run
+cd apps/admin
+npm install
+npm run build
+npm start
 ```
 
-Defaults to `http://localhost:8080` (see `Sources/AdminMacOS/Config.swift`). No build config file to copy — the only setting is the `LINEOA_API_BASE_URL` environment variable.
+Base URL of `apps/api` comes from `NEXT_PUBLIC_API_BASE_URL` (defaults to `http://localhost:8080`). Localhost-only, no auth yet — do not expose publicly.
 
 ## Running tests / CI locally
 
@@ -106,7 +106,7 @@ npm run lint
 npm run build
 ```
 
-`apps/liff` has no dedicated test script (CI only lints and builds it). `apps/admin-macos` has no test target and is not part of CI — build it manually with `cd apps/admin-macos && swift build` if you touch it.
+`apps/liff` has no dedicated test script (CI only lints and builds it). `apps/admin` has no dedicated test script either (lint+build only).
 
 ## Migrations and DB role
 
