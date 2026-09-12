@@ -15,9 +15,9 @@ export default function RootLayout({
         <header className="bg-blue-800 text-white p-4 flex justify-between">
           <h1 className="text-xl font-semibold">Admin Panel</h1>
           <nav className="space-x-4">
-            <Link href="/">Home</Link>
-            <Link href="/sessions">Sessions</Link>
+            <Link href="/">Sessions</Link>
             <Link href="/customers">Customers</Link>
+            <Link href="/reports">Reports</Link>
           </nav>
         </header>
         <main>{children}</main>

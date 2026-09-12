@@ -291,7 +291,7 @@ CURRENT TASK: $TSK_ID — $TSK_TITLE"
           gh pr merge -R GRITui/LineOA-middleware "sprint/$TSK_ID" --squash --delete-branch 2>/dev/null || log "merge failed for $TSK_ID"
           set_task_status "$TSK_ID" DONE
           PCT_DONE=$(( ( $(grep -c '<status>' "$STATE/backlog-inbox.md") - $(grep -c 'READY_FOR_PM\|NEEDS_OWNER_REVIEW' "$STATE/backlog-inbox.md") ) * 100 ))
-          write_handshake "EXECUTING" "$TSK_ID (done)" "$PCT"
+          write_handshake "EXECUTING" "$TSK_ID (done)" "$PCT_DONE"
           log "$TSK_ID merged ✅"
           ;;
       esac

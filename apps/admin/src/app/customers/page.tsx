@@ -1,14 +1,8 @@
-import { useEffect, useState } from "react";
-import { apiBase } from "@/lib/apiClient";
-import { CustomersTable } from "@/components/CustomersTable";
-import Head from "next/head";
+"use client";
 
-type Customer = {
-  id: string;
-  name: string;
-  email?: string;
-  bookingCount: number;
-};
+import { useEffect, useState } from "react";
+import { apiGet } from "@/lib/apiClient";
+import { CustomersTable, type Customer } from "@/components/CustomersTable";
 
 export default function CustomersPage() {
   const [customers, setCustomers] = useState<Customer[]>([]);
@@ -19,11 +13,7 @@ export default function CustomersPage() {
     const fetchCustomers = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`${apiBase}/customers`);
-        if (!response.ok) {
-          throw new Error(`API error ${response.status}: ${await response.text()}`);
-        }
-        const data = await response.json();
+        const data = await apiGet<Customer[]>("/customers");
         setCustomers(data);
         setError(null);
       } catch (err) {
@@ -37,25 +27,19 @@ export default function CustomersPage() {
   }, []);
 
   return (
-    <>
-      <Head>
-        <title>Customers – Admin</title>
-      </Head>
+    <main className="p-6">
+      <h1 className="text-2xl font-bold mb-4">Customers</h1>
 
-      <main className="p-6">
-        <h1 className="text-2xl font-bold mb-4">Customers</h1>
+      {loading && <p>Loading...</p>}
+      {error && <p className="text-red-600">Error: {error}</p>}
 
-        {loading && <p>Loading...</p>}
-        {error && <p className="text-red-600">Error: {error}</p>}
+      {!loading && !error && customers.length === 0 && (
+        <p>No customers found.</p>
+      )}
 
-        {!loading && !error && customers.length === 0 && (
-          <p>No customers found.</p>
-        )}
-
-        {!loading && !error && customers.length > 0 && (
-          <CustomersTable customers={customers} />
-        )}
-      </main>
-    </>
+      {!loading && !error && customers.length > 0 && (
+        <CustomersTable customers={customers} />
+      )}
+    </main>
   );
 }
