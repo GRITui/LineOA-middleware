@@ -16,6 +16,7 @@ public func configure(_ app: Application) throws {
     app.migrations.add(CreateCustomer())
     app.migrations.add(CreateSession())
     app.migrations.add(CreateBooking())
+    app.migrations.add(AddBookingSourceAndNote())
 
     if let token = Environment.get("LINE_CHANNEL_ACCESS_TOKEN"), !token.isEmpty {
         app.lineMessaging = LiveLineMessagingClient(client: app.client, channelAccessToken: token)
