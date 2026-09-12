@@ -6,6 +6,32 @@ import { fetchAvailability, createBooking, resolveCustomer, type Session, type C
 
 type BookingState = "idle" | "confirming" | "submitting" | "success" | "error";
 
+function parseDate(iso: string): Date | null {
+  const d = new Date(iso);
+  return Number.isNaN(d.getTime()) ? null : d;
+}
+
+function dayNumeral(iso: string): string {
+  return parseDate(iso)?.getDate().toString() ?? iso;
+}
+
+function dateMeta(iso: string): string {
+  const d = parseDate(iso);
+  if (!d) return iso;
+  const weekday = d.toLocaleDateString(undefined, { weekday: "long" });
+  const month = d.toLocaleDateString(undefined, { month: "long" });
+  return `${weekday}, ${month}`;
+}
+
+function durationLabel(startTime: string, endTime: string): string | null {
+  const parts = (t: string) => t.split(":").map(Number);
+  const [sh, sm] = parts(startTime);
+  const [eh, em] = parts(endTime);
+  if ([sh, sm, eh, em].some((n) => Number.isNaN(n))) return null;
+  const mins = eh * 60 + em - (sh * 60 + sm);
+  return mins > 0 ? `${mins} min` : null;
+}
+
 export default function BookingPage() {
   const [customer, setCustomer] = useState<Customer | null>(null);
   const [sessions, setSessions] = useState<Session[]>([]);
@@ -43,6 +69,8 @@ export default function BookingPage() {
     [sessions, effectiveDate]
   );
 
+  const openCount = slotsForDate.filter((s) => s.status !== "full").length;
+
   function pickSlot(session: Session) {
     if (session.status === "full") return;
     setSelectedSession(session);
@@ -78,107 +106,128 @@ export default function BookingPage() {
   }
 
   return (
-    <main className="min-h-screen p-4">
-      <h1 className="text-xl font-semibold mb-4">Book a Session</h1>
-      {error && <p className="text-red-600 mb-4">{error}</p>}
+    <div className="tt-shell">
+      <main className="tt-phone">
+        <header className="tt-header">
+          <div className="tt-kicker">Class schedule · book in seconds</div>
+          <h1>Book a Session</h1>
+        </header>
+        {error && <p className="tt-error">{error}</p>}
 
-      {bookingState === "success" && (
-        <div className="mb-4 rounded-lg bg-green-50 border border-green-200 p-3 text-green-800">
-          Booking confirmed! You&apos;ll get a LINE message with the details.
-          <button className="ml-3 underline" onClick={cancelConfirmation}>
-            Book another
-          </button>
-        </div>
-      )}
+        {bookingState === "success" && (
+          <div className="tt-success">
+            Booking confirmed! You&apos;ll get a LINE message with the details.
+            <button className="tt-link" onClick={cancelConfirmation}>
+              Book another
+            </button>
+          </div>
+        )}
 
-      {bookingState !== "success" && (
-        <>
-          <section className="mb-4">
-            <h2 className="text-sm font-medium text-gray-500 mb-2">Date</h2>
-            <div className="flex gap-2 flex-wrap">
+        {bookingState !== "success" && (
+          <>
+            <div className="tt-datenav">
+              <div className="tt-big">{effectiveDate ? dayNumeral(effectiveDate) : "–"}</div>
+              <div className="tt-rest">
+                {effectiveDate ? dateMeta(effectiveDate) : "No dates available"}
+                <br />
+                {effectiveDate && (
+                  <>
+                    <b>
+                      {slotsForDate.length} session{slotsForDate.length === 1 ? "" : "s"}
+                    </b>{" "}
+                    · <span className="tt-ok">{openCount} with space</span>
+                  </>
+                )}
+              </div>
+            </div>
+
+            <div className="tt-weekstrip" role="tablist" aria-label="Dates">
               {dates.map((date) => (
-                <button
+                <span
                   key={date}
-                  className={`rounded-full px-3 py-1 text-sm border ${
-                    date === effectiveDate
-                      ? "bg-green-600 text-white border-green-600"
-                      : "bg-white text-gray-700 border-gray-300"
-                  }`}
+                  role="tab"
+                  aria-selected={date === effectiveDate}
+                  title={dateMeta(date)}
+                  className={date === effectiveDate ? "tt-on" : ""}
                   onClick={() => {
                     setSelectedDate(date);
                     cancelConfirmation();
                   }}
                 >
-                  {date}
-                </button>
+                  {dayNumeral(date)}
+                </span>
               ))}
-              {dates.length === 0 && <p className="text-sm text-gray-500">No dates available.</p>}
+              {dates.length === 0 && <p className="tt-muted">No dates available.</p>}
             </div>
-          </section>
 
-          <section>
-            <h2 className="text-sm font-medium text-gray-500 mb-2">Time slot</h2>
-            <ul className="space-y-3">
+            <div className="tt-ledger">
               {slotsForDate.map((session) => {
                 const isFull = session.status === "full";
                 const isSelected = selectedSession?.id === session.id;
+                const left = session.capacity - session.bookedCount;
+                const dur = durationLabel(session.startTime, session.endTime);
                 return (
-                  <li
-                    key={session.id}
-                    className={`border rounded-lg p-3 flex items-center justify-between ${
-                      isFull ? "opacity-50" : ""
-                    } ${isSelected ? "border-green-600 ring-1 ring-green-600" : ""}`}
-                  >
+                  <div key={session.id} className={`tt-slot${isFull ? " tt-full" : ""}`}>
+                    <div className="tt-time">
+                      {session.startTime}
+                      {dur && <span>{dur}</span>}
+                    </div>
                     <div>
-                      <p className="font-medium">{session.title}</p>
-                      <p className="text-sm text-gray-500">
-                        {session.startTime}–{session.endTime} · {session.bookedCount}/{session.capacity}
-                        {isFull && " · Full"}
-                      </p>
+                      <div className="tt-t">{session.title}</div>
+                      <div className="tt-m">
+                        {isFull ? (
+                          <span className="tt-fulltag">Full</span>
+                        ) : (
+                          <>
+                            <span className="tt-ok">{left} left</span> · {session.bookedCount}/
+                            {session.capacity}
+                          </>
+                        )}
+                      </div>
                     </div>
                     <button
-                      className="bg-green-600 text-white rounded px-3 py-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className={isSelected ? "tt-hot" : ""}
                       disabled={isFull}
                       aria-disabled={isFull}
                       onClick={() => pickSlot(session)}
                     >
                       {isFull ? "Full" : "Select"}
                     </button>
-                  </li>
+                  </div>
                 );
               })}
               {effectiveDate && slotsForDate.length === 0 && (
-                <p className="text-sm text-gray-500">No slots for this date.</p>
+                <p className="tt-muted">No slots for this date.</p>
               )}
-            </ul>
-          </section>
-        </>
-      )}
+            </div>
+          </>
+        )}
 
-      {selectedSession && bookingState !== "success" && (
-        <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 shadow-lg">
-          <p className="mb-2 text-sm">
-            Confirm <span className="font-medium">{selectedSession.title}</span> on{" "}
-            {selectedSession.date} {selectedSession.startTime}–{selectedSession.endTime}?
-          </p>
-          <div className="flex gap-2">
-            <button
-              className="bg-green-600 text-white rounded px-4 py-2 disabled:opacity-50"
-              disabled={bookingState === "submitting"}
-              onClick={confirmBooking}
-            >
-              {bookingState === "submitting" ? "Booking…" : "Confirm booking"}
-            </button>
-            <button
-              className="border rounded px-4 py-2"
-              disabled={bookingState === "submitting"}
-              onClick={cancelConfirmation}
-            >
-              Cancel
-            </button>
+        {selectedSession && bookingState !== "success" && (
+          <div className="tt-confirm">
+            <p>
+              <b>{selectedSession.title}</b> — {dateMeta(selectedSession.date)},{" "}
+              {selectedSession.startTime}. Confirm booking?
+            </p>
+            <div className="tt-row">
+              <button
+                className="tt-go"
+                disabled={bookingState === "submitting"}
+                onClick={confirmBooking}
+              >
+                {bookingState === "submitting" ? "Booking…" : "Confirm booking"}
+              </button>
+              <button
+                className="tt-back"
+                disabled={bookingState === "submitting"}
+                onClick={cancelConfirmation}
+              >
+                Cancel
+              </button>
+            </div>
           </div>
-        </div>
-      )}
-    </main>
+        )}
+      </main>
+    </div>
   );
 }

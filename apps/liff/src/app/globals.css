@@ -1,3 +1,51 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Timetable design system (draft B): white ledger, blue actions,
+   green availability, red full-state. All classes prefixed tt-. */
+.tt-shell { background: #e3e1da; display: flex; justify-content: center; min-height: 100vh; }
+.tt-phone { width: 100%; max-width: 480px; background: #ffffff; min-height: 100vh;
+  display: flex; flex-direction: column; padding: 0 20px; color: #161d1a; }
+.tt-header { padding: 22px 0 4px; border-bottom: 2px solid #161d1a; }
+.tt-kicker { font-size: 12px; color: #2447f5; font-weight: 600; }
+.tt-header h1 { font-size: 21px; font-weight: 700; margin-top: 2px; }
+.tt-error { color: #b3261e; font-size: 14px; margin: 12px 0 0; }
+.tt-success { margin-top: 12px; background: #eaf7ee; border: 1px solid #bfe3c9;
+  border-radius: 10px; padding: 12px; color: #14532d; font-size: 14px; }
+.tt-link { margin-left: 12px; text-decoration: underline; background: none; border: 0;
+  color: inherit; font-size: inherit; }
+.tt-datenav { display: flex; align-items: center; gap: 14px; padding: 14px 16px;
+  margin-top: 14px; background: #edf2ff; border-radius: 14px; }
+.tt-big { font-size: 56px; font-weight: 800; line-height: 1; letter-spacing: -0.03em; }
+.tt-rest { font-size: 14px; color: #3c4540; }
+.tt-ok { color: #0e7a3d; font-weight: 700; }
+.tt-weekstrip { display: flex; gap: 8px; padding: 12px 0 14px; font-size: 13px;
+  color: #8a918c; overflow-x: auto; }
+.tt-weekstrip span { padding: 4px 0; min-width: 30px; text-align: center; flex: 0 0 auto; }
+.tt-weekstrip .tt-on { background: #2447f5; color: #fff; font-weight: 700;
+  border-radius: 999px; padding: 4px 0; }
+.tt-ledger { border-top: 1px solid #d8d6cd; }
+.tt-slot { display: grid; grid-template-columns: 64px 1fr auto; gap: 10px; align-items: center;
+  padding: 14px 0; border-bottom: 1px solid #d8d6cd; }
+.tt-time { font-size: 15px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.tt-time span { display: block; font-size: 11px; font-weight: 400; color: #8a918c; }
+.tt-t { font-size: 15px; font-weight: 600; }
+.tt-m { font-size: 12px; color: #5a625d; margin-top: 2px; }
+.tt-full { color: #a2a8a3; }
+.tt-full .tt-t, .tt-full .tt-time { color: #a2a8a3; }
+.tt-fulltag { display: inline-block; font-size: 11px; font-weight: 700;
+  background: #fdecea; color: #b3261e; border-radius: 999px; padding: 2px 9px; }
+.tt-slot button { background: none; border: 1.5px solid #2447f5; color: #2447f5;
+  border-radius: 999px; padding: 7px 16px; font-size: 13px; font-weight: 700; }
+.tt-slot button.tt-hot { background: #2447f5; border-color: #2447f5; color: #fff; }
+.tt-slot button:disabled { border-color: #c6c9c4; color: #a2a8a3; font-weight: 400; }
+.tt-muted { font-size: 13px; color: #8a918c; padding: 8px 0; }
+.tt-confirm { margin-top: auto; border-top: 2px solid #2447f5; padding: 14px 0 22px; }
+.tt-confirm p { font-size: 14px; margin-bottom: 10px; }
+.tt-confirm .tt-row { display: flex; gap: 10px; }
+.tt-confirm .tt-go { flex: 1; background: #2447f5; color: #fff; border: 0; padding: 13px;
+  font-size: 15px; font-weight: 700; border-radius: 10px; }
+.tt-confirm .tt-go:disabled { opacity: 0.5; }
+.tt-confirm .tt-back { background: none; border: 0; text-decoration: underline; font-size: 14px; }
+.tt-confirm .tt-back:disabled { opacity: 0.5; }
