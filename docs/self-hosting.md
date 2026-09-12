@@ -104,8 +104,10 @@ works for local iteration but is not what "staging" should be running.
 
 ### Admin panel
 
-`apps/admin` (Next.js web admin, localhost-only, no auth yet) runs alongside
-the stack for local E2E only — do not expose it via a tunnel:
+`apps/admin` (Next.js web admin, localhost-only, password-gated) runs alongside
+the stack for local E2E only — do not expose it via a tunnel. Set a server-only
+`ADMIN_PASSWORD` in its environment before starting (see `apps/admin/.env.example`);
+without it every page redirects to `/login` and login answers 503:
 
 ```
 cd apps/admin
