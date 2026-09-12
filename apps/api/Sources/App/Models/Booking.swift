@@ -34,9 +34,17 @@ final class Booking: Model, Content, @unchecked Sendable {
     @Field(key: "reminder_15min_sent")
     var reminder15Sent: Bool
 
+    // Booking origin: "line" (LIFF / webhook flow) or "admin" (manual
+    // walk-in / phone booking from the admin panel). See TSK-401.
+    @Field(key: "source")
+    var source: String
+
+    @OptionalField(key: "note")
+    var note: String?
+
     init() {}
 
-    init(id: UUID? = nil, customerID: Customer.IDValue, sessionID: Session.IDValue, status: BookingStatus = .confirmed) {
+    init(id: UUID? = nil, customerID: Customer.IDValue, sessionID: Session.IDValue, status: BookingStatus = .confirmed, source: String = "line", note: String? = nil) {
         self.id = id
         self.$customer.id = customerID
         self.$session.id = sessionID
@@ -44,6 +52,8 @@ final class Booking: Model, Content, @unchecked Sendable {
         self.reminder24Sent = false
         self.reminder2Sent = false
         self.reminder15Sent = false
+        self.source = source
+        self.note = note
     }
 }
 
@@ -70,5 +80,23 @@ struct CreateBooking: AsyncMigration {
     func revert(on database: Database) async throws {
         try await database.schema("bookings").delete()
         try await database.enum("booking_status").delete()
+    }
+}
+
+// See TSK-401: tracks booking origin + free-text note for manual bookings.
+// Default source "line" backfills existing rows as LINE-originated.
+struct AddBookingSourceAndNote: AsyncMigration {
+    func prepare(on database: Database) async throws {
+        try await database.schema("bookings")
+            .field("source", .string, .required, .sql(.default("line")))
+            .field("note", .string)
+            .update()
+    }
+
+    func revert(on database: Database) async throws {
+        try await database.schema("bookings")
+            .deleteField("source")
+            .deleteField("note")
+            .update()
     }
 }

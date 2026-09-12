@@ -17,3 +17,21 @@ export async function apiGet<T>(path: string): Promise<T> {
 
   return (await res.json()) as T;
 }
+
+// TSK-402: walk-in / phone booking (admin creates a guest customer server-side).
+export async function createManualBooking(input: {
+  sessionID: string;
+  name: string;
+  phone?: string;
+}): Promise<unknown> {
+  const res = await fetch(`${apiBase}/bookings/manual`, {
+    method: "POST",
+    headers: { Accept: "application/json", "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  });
+  if (!res.ok) {
+    const txt = await res.text();
+    throw new Error(`API error ${res.status}: ${txt}`);
+  }
+  return res.json();
+}
