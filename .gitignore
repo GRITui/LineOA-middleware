@@ -20,3 +20,6 @@ apps/admin/out/
 .DS_Store
 .vscode/
 .idea/
+
+# Autonomous sprint-loop state (local only, per scripts/sprint-loop.sh)
+.agent-loop/

@@ -6,7 +6,7 @@ LINE Official Account + LINE Mini App (LIFF) booking platform proof of concept.
 
 - **`apps/liff`** — LINE Mini App frontend (Next.js/React/Tailwind, required by LINE's LIFF webview).
 - **`apps/api`** — Backend API (Swift 6/Vapor 4 + Postgres via Fluent).
-- **`apps/admin`** — Web admin panel (Next.js, localhost-only). No auth yet — do not expose publicly.
+- **`apps/admin`** — Web admin panel (Next.js, localhost-only). Password-gated via the `ADMIN_PASSWORD` env var (12h httpOnly session cookie, fail-closed when unset) — still localhost-only, do not expose publicly.
 
 ## Scope
 
@@ -24,7 +24,7 @@ apps/
     Sources/App/Models/        Fluent models (Booking, Customer, Session)
     Tests/AppTests/            XCTVapor test suite
   liff/           Next.js LIFF Mini App (Tailwind)
-  admin/          Next.js web admin panel (localhost-only, no auth yet)
+  admin/          Next.js web admin panel (localhost-only, ADMIN_PASSWORD gate)
 docs/
   db-security.md  Least-privilege Postgres role for the app (see Deploy below)
   runbook.md      Common failure modes and recovery steps
@@ -87,7 +87,7 @@ npm run build
 npm start
 ```
 
-Base URL of `apps/api` comes from `NEXT_PUBLIC_API_BASE_URL` (defaults to `http://localhost:8080`). Localhost-only, no auth yet — do not expose publicly.
+Base URL of `apps/api` comes from `NEXT_PUBLIC_API_BASE_URL` (defaults to `http://localhost:8080`). Access is gated by a shared password from the server-only `ADMIN_PASSWORD` env var (sign in at `/login`; 12h httpOnly session cookie; everything redirects to login when unset). Localhost-only — do not expose publicly.
 
 ## Running tests / CI locally
 
