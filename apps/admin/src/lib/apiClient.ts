@@ -1,4 +1,4 @@
-export const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/+$/, "");
+export const apiBase = (process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080").replace(/\/+$/, "");
 
 export async function apiGet<T>(path: string): Promise<T> {
   const url = `${apiBase}${path}`;
