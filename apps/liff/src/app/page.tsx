@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { initLiff, liff } from "@/lib/liff";
-import { fetchAvailability, createBooking, resolveCustomer, type Session, type Customer } from "@/lib/api";
+import { fetchAvailability, createBooking, resolveCustomer, BookingError, type Session, type Customer } from "@/lib/api";
 
 type BookingState = "idle" | "confirming" | "submitting" | "success" | "error";
 
@@ -65,8 +65,20 @@ export default function BookingPage() {
       const updated = await fetchAvailability();
       setSessions(updated);
       setBookingState("success");
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      // Scenario C (TSK-405): the slot was taken (or filled) while the customer
+      // was confirming. Show a friendly message and refresh availability in
+      // place — the slot will now render as Full.
+      if (err instanceof BookingError && err.status === 409) {
+        setError("Sorry, this slot was just taken — please choose another.");
+        setSelectedSession(null);
+        setBookingState("idle");
+        fetchAvailability()
+          .then(setSessions)
+          .catch(() => {});
+        return;
+      }
+      setError(err instanceof Error ? err.message : "Failed to create booking");
       setBookingState("error");
     }
   }

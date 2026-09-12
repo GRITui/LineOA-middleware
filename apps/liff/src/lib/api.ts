@@ -37,12 +37,35 @@ export async function fetchAvailability(): Promise<Session[]> {
 }
 
 // See GitHub issue #13 (booking confirmation UI).
+// Thrown when POST /bookings fails; carries the HTTP status and the backend's
+// reason string so the UI can react to specific failures (e.g. 409 = the slot
+// was taken while the customer was confirming — see TSK-405).
+export class BookingError extends Error {
+  status: number;
+  constructor(status: number, reason: string) {
+    super(reason);
+    this.name = "BookingError";
+    this.status = status;
+  }
+}
+
 export async function createBooking(customerID: string, sessionID: string) {
   const res = await fetch(`${API_BASE_URL}/bookings`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ customerID, sessionID }),
   });
-  if (!res.ok) throw new Error("Failed to create booking");
+  if (!res.ok) {
+    let reason = "Failed to create booking";
+    try {
+      const body = await res.json();
+      if (typeof body?.reason === "string" && body.reason.length > 0) {
+        reason = body.reason;
+      }
+    } catch {
+      // Non-JSON error body — keep the generic message.
+    }
+    throw new BookingError(res.status, reason);
+  }
   return res.json();
 }
