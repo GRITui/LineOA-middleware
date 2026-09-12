@@ -17,9 +17,7 @@ export default function SessionDetail({ params }: { params: Promise<{ sessionID:
   const [quickAddError, setQuickAddError] = useState<string | null>(null);
   const [quickAddBusy, setQuickAddBusy] = useState(false);
 
-  // Shared by the mount fetch and the post-save refresh. The setState calls
-  // below are the intentional data-loading pattern for this page.
-  // eslint-disable-next-line react-hooks/set-state-in-effect
+  // Shared by the post-save refresh (submitQuickAdd).
   const loadBookings = useCallback(async () => {
     try {
       setLoading(true);
@@ -33,9 +31,22 @@ export default function SessionDetail({ params }: { params: Promise<{ sessionID:
     }
   }, [sessionID]);
 
+  // Mount fetch — same data-loading pattern as the customers page.
   useEffect(() => {
-    loadBookings();
-  }, [loadBookings]);
+    const fetchBookings = async () => {
+      try {
+        setLoading(true);
+        const data = await apiGet<Booking[]>(`/sessions/${sessionID}/bookings`);
+        setBookings(data);
+        setError(null);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Unknown error");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchBookings();
+  }, [sessionID]);
 
   async function submitQuickAdd(e: React.FormEvent) {
     e.preventDefault();
