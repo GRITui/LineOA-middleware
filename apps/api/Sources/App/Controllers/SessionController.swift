@@ -11,6 +11,7 @@ struct SessionController: RouteCollection {
         sessions.get(use: index)
         sessions.post(use: create)
         sessions.group(":sessionID") { session in
+            session.delete(use: delete)
             session.put(use: update)
             session.get("bookings", use: bookings)
         }
@@ -64,6 +65,26 @@ struct SessionController: RouteCollection {
         return session
     }
 
+    func delete(req: Request) async throws -> HTTPStatus {
+        guard let sessionID = req.parameters.get("sessionID", as: UUID.self) else {
+            throw Abort(.badRequest, reason: "Invalid session ID")
+        }
+        guard let session = try await Session.find(sessionID, on: req.db) else {
+            throw Abort(.notFound, reason: "Session not found")
+        }
+
+        let bookingCount = try await Booking.query(on: req.db)
+            .filter(\.$session.$id == sessionID)
+            .count()
+
+        if bookingCount > 0 {
+            throw Abort(.conflict, reason: "Cannot delete session: \(bookingCount) booking(s) exist")
+        }
+
+        try await session.delete(on: req.db)
+        return .noContent
+    }
+
     struct BookingWithCustomer: Content {
         var bookingID: UUID
         var status: BookingStatus
@@ -73,6 +94,9 @@ struct SessionController: RouteCollection {
         var customerLineUserID: String
         var customerPhone: String?
         var customerEmail: String?
+        var reminder24Sent: Bool
+        var reminder2Sent: Bool
+        var reminder15Sent: Bool
     }
 
     func bookings(req: Request) async throws -> [BookingWithCustomer] {
@@ -98,7 +122,10 @@ struct SessionController: RouteCollection {
                 customerName: booking.customer.name,
                 customerLineUserID: booking.customer.lineUserID,
                 customerPhone: booking.customer.phone,
-                customerEmail: booking.customer.email
+                customerEmail: booking.customer.email,
+                reminder24Sent: booking.reminder24Sent,
+                reminder2Sent: booking.reminder2Sent,
+                reminder15Sent: booking.reminder15Sent
             )
         }
     }
