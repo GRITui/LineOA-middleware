@@ -1,16 +1,18 @@
 "use client";
 
-import { format } from "date-fns";
-
+// Mirrors SessionController.BookingWithCustomer in apps/api.
 export type Booking = {
-  id: string;
-  customerName: string;
-  lineUserID: string;
+  bookingID: string;
   status: string;
-  createdDate: string;
-  reminder24hSent: boolean;
-  reminder2hSent: boolean;
-  reminder15mSent: boolean;
+  createdDate: string | null;
+  customerID: string;
+  customerName: string;
+  customerLineUserID: string;
+  customerPhone: string | null;
+  customerEmail: string | null;
+  reminder24Sent: boolean;
+  reminder2Sent: boolean;
+  reminder15Sent: boolean;
 };
 
 interface BookingsTableProps {
@@ -34,14 +36,16 @@ export const BookingsTable = ({ bookings }: BookingsTableProps) => {
         </thead>
         <tbody>
           {bookings.map((booking) => (
-            <tr key={booking.id} className="odd:bg-white even:bg-gray-50">
+            <tr key={booking.bookingID} className="odd:bg-white even:bg-gray-50">
               <td className="p-2 border">{booking.customerName}</td>
-              <td className="p-2 border">{booking.lineUserID}</td>
+              <td className="p-2 border">{booking.customerLineUserID}</td>
               <td className="p-2 border">{booking.status}</td>
-              <td className="p-2 border">{format(new Date(booking.createdDate), "PPpp")}</td>
-              <td className="p-2 border text-center">{booking.reminder24hSent ? "✓" : "✗"}</td>
-              <td className="p-2 border text-center">{booking.reminder2hSent ? "✓" : "✗"}</td>
-              <td className="p-2 border text-center">{booking.reminder15mSent ? "✓" : "✗"}</td>
+              <td className="p-2 border">
+                {booking.createdDate ? new Date(booking.createdDate).toLocaleString() : "-"}
+              </td>
+              <td className="p-2 border text-center">{booking.reminder24Sent ? "✓" : "✗"}</td>
+              <td className="p-2 border text-center">{booking.reminder2Sent ? "✓" : "✗"}</td>
+              <td className="p-2 border text-center">{booking.reminder15Sent ? "✓" : "✗"}</td>
             </tr>
           ))}
         </tbody>

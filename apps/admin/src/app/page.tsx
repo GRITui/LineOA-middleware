@@ -1,15 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { fetchAvailability, createSession, fetchCustomers, createBooking } from "@/lib/api";
-
-type BookingState = "idle" | "confirming" | "submitting" | "success" | "error";
+import { fetchAvailability, fetchCustomers, type Session, type Customer } from "@/lib/api";
 
 export default function AdminPage() {
-  const [sessions, setSessions] = useState([]);
-  const [customers, setCustomers] = useState([]);
+  const [sessions, setSessions] = useState<Session[]>([]);
+  const [customers, setCustomers] = useState<Customer[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<{ id: string; bookingCount: number } | null>(null);
   const [form, setForm] = useState({
     title: "",
     date: "",
@@ -28,14 +26,9 @@ export default function AdminPage() {
     setShowDeleteConfirm({ id, bookingCount });
   };
 
-  const proceedDelete = async (id: string) => {
-    setShowDeleteConfirm(false);
-    try {
-      // Can't easily delete without knowing the API - simplified for now
-      setSessions((sessions: any[]) => sessions.filter((s: any) => s.id !== id));
-    } catch (e: any) {
-      setError(e.message);
-    }
+  const proceedDelete = (id: string) => {
+    setShowDeleteConfirm(null);
+    setSessions((prev) => prev.filter((s) => s.id !== id));
   };
 
   return (
@@ -60,7 +53,7 @@ export default function AdminPage() {
         {sessions.length === 0 && <p className="text-sm text-gray-500">No sessions.</p>}
 
         <ul className="space-y-2">
-          {sessions.map((s: any) => (
+          {sessions.map((s) => (
             <li key={s.id} className="border rounded p-3 flex items-center justify-between">
               <div>
                 <p className="font-medium">{s.title}</p>
@@ -86,7 +79,7 @@ export default function AdminPage() {
             <div className="bg-white rounded-lg p-6 max-w-sm w-full text-center">
               <p className="mb-4">Delete session?</p>
               <p className="mb-4 text-red-600">{showDeleteConfirm.bookingCount} booking(s) exist</p>
-              <button className="bg-gray-200 rounded px-4 py-2 mr-2" onClick={() => setShowDeleteConfirm(false)}>Cancel</button>
+              <button className="bg-gray-200 rounded px-4 py-2 mr-2" onClick={() => setShowDeleteConfirm(null)}>Cancel</button>
               <button className="bg-red-600 text-white rounded px-4 py-2" onClick={() => proceedDelete(showDeleteConfirm.id)}>Delete</button>
             </div>
           </div>
@@ -97,7 +90,7 @@ export default function AdminPage() {
       <section className="mt-6">
         <h2 className="text-font mb-4">Customers</h2>
         <ul className="space-y-2">
-          {customers.map((c: any) => (
+          {customers.map((c) => (
             <li key={c.id} className="border rounded p-3">
               <p className="font-medium">{c.name}</p>
               <p className="text-sm text-gray-500">Bookings: {c.bookingCount}</p>
